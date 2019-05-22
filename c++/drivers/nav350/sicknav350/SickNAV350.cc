@@ -1343,8 +1343,33 @@ void SickNav350::SetScanDataFormat()
 	  }
 
     auto remission_data_follows = arg[count++];
-    //std::cout <<"remission data follow" << remission_data << std::endl;
-
+    if (remission_data_follows == "1")
+    {
+      if (arg[count++]=="RSSI1")
+		  {
+			  count++; //scalefactor=1
+			  count++; //offset=0
+			  count++; //MeasuredData_->angle_start=(double) _ConvertHexToDec(arg[count++])/1000;
+//			  std::cout<<"Start angle(grad):"<<MeasuredData_->angle_start<<std::endl;
+			  std::string str=arg[count++];
+			  //MeasuredData_->angle_step=(double) _ConvertHexToDec(str)/1000;
+//			  std::cout<<"Resolution (deg):"<<MeasuredData_->angle_step<<std::endl;
+			  count++; //MeasuredData_->timestamp_start=_ConvertHexToDec(arg[count++]);
+//			  std::cout<<"Timestamp start (ms)"<<MeasuredData_->timestamp_start<<std::endl;
+			  int num_data_points= _ConvertHexToDec(arg[count++]);
+        if (num_data_points != MeasuredData_->num_data_points) {
+          throw SickIOException("Remission measurement count mismatch");
+        }
+//			  std::cout<<"Number of data points "<<MeasuredData_->num_data_points<<std::endl;
+			  //MeasuredData_->angle_stop=MeasuredData_->angle_start+(MeasuredData_->num_data_points-1)*(MeasuredData_->angle_step);
+			  for (int i=0;i<MeasuredData_->num_data_points;i++)
+			  {
+				  MeasuredData_->intensity_values[i]=_ConvertHexToDec(arg[count++]);
+			  }
+    } else throw SickIOException("remission type != RSSI1");
+   } else {
+     throw SickIOException("remission_data_follows != 1");
+     }
   }
 
   int SickNav350::_ConvertHexToDec(std::string num)
@@ -1364,7 +1389,8 @@ void SickNav350::SetScanDataFormat()
 	  return suma;
 
   }
-  void SickNav350::GetSickMeasurements(double* range_values,unsigned int *num_measurements,
+  void SickNav350::GetSickMeasurements(double* range_values, int* intensity_values,
+  		unsigned int *num_measurements,
   		double *sector_step_angle,
   		double *sector_start_angle,
   		double *sector_stop_angle,
@@ -1374,6 +1400,7 @@ void SickNav350::SetScanDataFormat()
 	  for (int i=0;i<MeasuredData_->num_data_points;i++)
 	  {
 		  range_values[i]=MeasuredData_->range_values[i];
+		  intensity_values[i]=MeasuredData_->intensity_values[i];
 	  }
 	  *num_measurements=MeasuredData_->num_data_points;
 	  *sector_step_angle=MeasuredData_->angle_step;

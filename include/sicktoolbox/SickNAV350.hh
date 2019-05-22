@@ -244,6 +244,7 @@ class SickNav350 : public SickLIDAR< SickNav350BufferMonitor, SickNav350Message 
       double angle_stop;                                                                  ///< The angle at which the last measurement in the sector was acquired
       double range_values[SICK_MAX_NUM_MEASUREMENTS];                                     ///< The corresponding range values (NOTE: The size of this array is intended to be large enough to accomodate various sector configs.)
       double scan_angles[SICK_MAX_NUM_MEASUREMENTS];                                      ///< The scan angles corresponding to the respective measurements
+      int intensity_values[SICK_MAX_NUM_MEASUREMENTS];
     } sick_nav350_sector_data_t;
     
     /**
@@ -336,7 +337,7 @@ class SickNav350 : public SickLIDAR< SickNav350BufferMonitor, SickNav350Message 
     void GetDataNavigation(int wait,int dataset);
 
     /**Get Measurements*/
-    void GetSickMeasurements(double* range_values,unsigned int *num_measurements,
+    void GetSickMeasurements(double* range_values, int* intensity_values, unsigned int *num_measurements,
     		double *sector_step_angle,
     		double *sector_start_angle,
     		double *sector_stop_angle,
