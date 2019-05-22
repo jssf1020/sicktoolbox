@@ -144,6 +144,9 @@ class SickNav350 : public SickLIDAR< SickNav350BufferMonitor, SickNav350Message 
     static const std::string DOMAPPING_COMMAND_TYPE;
     static const std::string DOMAPPING_COMMAND;
 
+    static const std::string SETSCANDATAFORMAT_COMMAND_TYPE;
+    static const std::string SETSCANDATAFORMAT_COMMAND;
+
     /**
      * \struct sick_nav350_config_global_tag
      * \brief A structure to aggregate the data used to configure the
@@ -323,6 +326,7 @@ class SickNav350 : public SickLIDAR< SickNav350BufferMonitor, SickNav350Message 
     void GetSickIdentity();
     /** Change to navigation mode */
     void SetOperatingMode(int mode);
+    void SetScanDataFormat();
 
     /**Get data */
     void GetData(int wait,int dataset);

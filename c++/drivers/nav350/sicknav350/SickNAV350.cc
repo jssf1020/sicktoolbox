@@ -65,6 +65,11 @@ const std::string SickNav350::DOMAPPING_COMMAND="mNMAPDoMapping";
 const std::string SickNav350::SETVELOCITY_COMMAND_TYPE="sMN";
 const std::string SickNav350::SETVELOCITY_COMMAND="mNPOSSetSpeed";
 
+
+const std::string SickNav350::SETSCANDATAFORMAT_COMMAND_TYPE="sWN";
+const std::string SickNav350::SETSCANDATAFORMAT_COMMAND = "NAVScanDataFormat";
+
+
   /**
    * \brief A standard constructor
    * \param sick_ip_address The ip address of the Sick Nav350
@@ -667,6 +672,86 @@ const std::string SickNav350::SETVELOCITY_COMMAND="mNPOSSetSpeed";
 
   }
 
+void SickNav350::SetScanDataFormat()
+  {
+      std::cout<<"Set scan format mode ";
+      std::string set_level = "sMN SetAccessMode 3 F4724744";
+      SickNav350Message set_level_msg((uint8_t*)set_level.c_str(), set_level.size());
+      SickNav350Message set_level_reply;
+	    try {
+	      _sendMessageAndGetReply(set_level_msg,set_level_reply);
+	        set_level_reply.Print();
+	    }
+	    catch(SickTimeoutException &sick_timeout_exception) {
+	      std::cerr << "sick_timeout_exception" << std::endl;
+	      throw;
+	    }
+
+	  std::cout<<"set setscandataformat"<<std::endl;
+	    uint8_t payload_buffer[SickNav350Message::MESSAGE_PAYLOAD_MAX_LENGTH] = {0};
+	    int count=0;
+	    std::string command_type=this->SETSCANDATAFORMAT_COMMAND_TYPE;
+	    std::string command=this->SETSCANDATAFORMAT_COMMAND;
+	    for (int i=0;i<command_type.length();i++)
+	    {
+	      payload_buffer[count]=command_type[i];
+	      count++;
+	    }
+	    payload_buffer[count]=' ';
+	    count++;
+	    for (int i=0;i<command.length();i++)
+	    {
+          payload_buffer[count]=command[i];
+	        count++;
+	    }
+	    payload_buffer[count]=' ';
+	    count++;
+	    payload_buffer[count]=48+1;//Single numbers that are converted to HEX always get a 3 in front
+	    count++;
+	    payload_buffer[count]=' ';
+	    count++;
+	    payload_buffer[count]=48+1;//Single numbers that are converted to HEX always get a 3 in front
+	    count++;
+
+	    /* Create the Sick messages */
+	    SickNav350Message send_message(payload_buffer,count);
+	    SickNav350Message recv_message;
+
+	    //byte_sequence sAN mNEVAChangeState (expected in response)
+	    //uint8_t byte_sequence[] = "sWA NAVScanDataFormat";
+	    uint8_t byte_sequence[] = {'s','W','A',' ','N','A','V','S','c','a','n','D','a','t','a', 'F', 'o', 'r', 'm', 'a', 't'};
+	    int byte_sequence_length=10;
+
+	    /* Send the message and check the reply */
+	    try {
+	      std::cout<<"Set scan format mode ";
+	      _sendMessageAndGetReply(send_message,recv_message);
+	      //_recvMessage(recv_message,byte_sequence,byte_sequence_length,DEFAULT_SICK_MESSAGE_TIMEOUT);
+	      //sick_nav350_sector_data_t.
+        //_SplitReceivedMessage(recv_message);
+
+        recv_message.Print();
+	    }
+
+	    catch(SickTimeoutException &sick_timeout_exception) {
+	      std::cerr << "sick_timeout_exception" << std::endl;
+
+	      throw;
+	    }
+
+	    catch(SickIOException &sick_io_exception) {
+	      std::cerr << "sick_io_exception" << std::endl;
+	      throw;
+	    }
+
+	    catch(...) {
+	      std::cerr << "SickNav350::_set operating mode - Unknown exception!" << std::endl;
+	      throw;
+	    }
+
+  }
+
+
   void SickNav350::DoMapping()
   {
           std::cout<<"Sending DoMapping command"<<std::endl;
@@ -1257,6 +1342,8 @@ const std::string SickNav350::SETVELOCITY_COMMAND="mNPOSSetSpeed";
 		  break;
 	  }
 
+    auto remission_data_follows = arg[count++];
+    //std::cout <<"remission data follow" << remission_data << std::endl;
 
   }
 

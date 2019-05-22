@@ -214,7 +214,7 @@ namespace SickToolbox {
     std::cout << "Message (ASCII):" << std::endl;
     std::cout.setf(std::ios::dec,std::ios::basefield);
     for (unsigned int i = 0; i < _message_length; i++) {
-      std::cout << _message_buffer[i] << " ";
+      std::cout << _message_buffer[i];
     }
     std::cout << std::endl << std::flush;    
   }
