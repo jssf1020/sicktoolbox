@@ -1385,9 +1385,14 @@ const std::string SickNav350::SETPOSEID_COMMAND="mNPOSSetPoseID";
 		payload_buffer[count] = ' ';
 		count++;
 
-		sprintf(c, "%d", (int)(data[i][4])); // size
+		sprintf(c, "%d", (int)(data[i][4])); // size  //这边有bug，被解析成十六进制，要加符号
 
 		std::cout << c << " ";
+        if(c[0] != '-'){
+			payload_buffer[count] = '+';
+			count++;
+		}
+
 		for(int k = 0; k < strlen(c); k++){
 			payload_buffer[count] = c[k];
 			count++;
@@ -3067,7 +3072,7 @@ const std::string SickNav350::SETPOSEID_COMMAND="mNPOSSetPoseID";
 			  PoseData_.meanDeviation=_ConvertHexToDec(arg[count++]);
 			  PoseData_.positionMode=_ConvertHexToDec(arg[count++]);
         std::string message = arg[count++];
-        std::cout << message << std::endl;
+        std::cout << message << std::endl;     //见通信协议手册73页InfoState
 			  PoseData_.infoState= _ConvertHexToDec(message);
 			  PoseData_.numUsedReflectors=_ConvertHexToDec(arg[count++]);
 		  }
